@@ -21,8 +21,8 @@ The following strategy is used to create the reference files:
 
 ## Reference file 
 ### GENCODE v43 + MANE annotations (default)
-- GENCODE v43 GTF downloaded from https://www.gencodegenes.org/human/release_43.html
-- MANE annotations downloaded from https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=3761611831_cxuXxnSLUAg8kHKdyeA9JteSAeyR&db=hg38&hgta_group=genes&hgta_track=mane&hgta_table=0&hgta_regionType=genome&position=chr7%3A155%2C796%2C286-155%2C809%2C628&hgta_outputType=primaryTable&hgta_outFileName= on March 3, 2026
+- GENCODE v43 GTF downloaded from [here](https://www.gencodegenes.org/human/release_43.html)
+- MANE annotations downloaded from [here](https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=3761611831_cxuXxnSLUAg8kHKdyeA9JteSAeyR&db=hg38&hgta_group=genes&hgta_track=mane&hgta_table=0&hgta_regionType=genome&position=chr7%3A155%2C796%2C286-155%2C809%2C628&hgta_outputType=primaryTable&hgta_outFileName=) on March 3, 2026
 
 - 500 bp TSS regions with header `#chr	start	end	name	score	strand	Ensembl_ID	gene_type` (use for ABC, ENCODE-rE2G, scE2G pipelines)
   - Path on Oak: `/oak/stanford/groups/engreitz/Data/hg38/genome-annotation/gencode.v43.protein_coding.TSS500bp.bed`
