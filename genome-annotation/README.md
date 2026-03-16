@@ -19,8 +19,8 @@ The following strategy is used to create the reference files:
       - Use TSS from longest transcript with highest TSL available
       - If no level 1/2 or TSL 1–3 transcripts, use TSS from longest transcript 
 
-## Reference file 
-### GENCODE v43 + MANE annotations (default)
+## Reference files 
+### GENCODE v43 + MANE annotations (default for hg38)
 - GENCODE v43 GTF downloaded from [here](https://www.gencodegenes.org/human/release_43.html)
 - MANE annotations downloaded from [here](https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=3761611831_cxuXxnSLUAg8kHKdyeA9JteSAeyR&db=hg38&hgta_group=genes&hgta_track=mane&hgta_table=0&hgta_regionType=genome&position=chr7%3A155%2C796%2C286-155%2C809%2C628&hgta_outputType=primaryTable&hgta_outFileName=) on March 3, 2026
 
