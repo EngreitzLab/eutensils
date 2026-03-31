@@ -137,6 +137,10 @@ python scripts/validate.py --new temp/{run_id}_predictions.tsv   # validate befo
 marimo run scripts/explore.py
 ```
 
+Or open directly in the browser (no setup required):
+
+https://marimo.app/github.com/EngreitzLab/eutensils/blob/main/sce2g-registry/scripts/explore.py
+
 ---
 
 ## Schema
