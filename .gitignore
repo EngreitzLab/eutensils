@@ -207,3 +207,7 @@ marimo/_lsp/
 __marimo__/
 
 .DS_Store
+
+# Other local files
+sce2g-registry/temp/
+sce2g-registry/input/
