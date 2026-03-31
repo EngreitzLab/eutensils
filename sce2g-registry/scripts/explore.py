@@ -4,6 +4,9 @@ Marimo web app for browsing scE2G predictions.
 
 Usage:
     marimo run scripts/explore.py
+
+Or open in browser (no setup):
+    https://marimo.app/github.com/EngreitzLab/eutensils/blob/main/sce2g-registry/scripts/explore.py
 """
 
 import marimo as mo
@@ -21,29 +24,31 @@ def __():
 
 @app.cell
 def __(pd, Path):
-    REGISTRY_DIR = Path(__file__).parent.parent
     GITHUB_RAW = "https://raw.githubusercontent.com/EngreitzLab/eutensils/main/sce2g-registry"
 
     def load_tsv(filename):
-        local = REGISTRY_DIR / filename
-        if local.exists():
-            return pd.read_csv(local, sep="\t", dtype=str).fillna("")
+        try:
+            local = Path(__file__).parent.parent / filename
+            if local.exists():
+                return pd.read_csv(local, sep="\t", dtype=str).fillna("")
+        except NameError:
+            pass  # __file__ not defined in WASM
         return pd.read_csv(f"{GITHUB_RAW}/{filename}", sep="\t", dtype=str).fillna("")
 
     preds = load_tsv("predictions.tsv")
     runs = load_tsv("runs.tsv")
-    return REGISTRY_DIR, GITHUB_RAW, preds, runs
+    return GITHUB_RAW, preds, runs
 
 
 @app.cell
-def __(mo):
+def __():
     return mo.md("# scE2G predictions registry"),
 
 
-# ── Filters ──────────────────────────────────────────────────────────────────
+# ── Filters ───────────────────────────────────────────────────────────────────
 
 @app.cell
-def __(mo, preds):
+def __(preds):
     search = mo.ui.text(placeholder="Search biosample, dataset...", label="Search")
     dataset_filter = mo.ui.multiselect(
         sorted(d for d in preds["dataset"].unique() if d), label="Dataset"
@@ -57,7 +62,7 @@ def __(mo, preds):
 
 
 @app.cell
-def __(mo, search, dataset_filter, model_filter, qc_only, preferred_only):
+def __(search, dataset_filter, model_filter, qc_only, preferred_only):
     return (
         mo.hstack(
             [search, dataset_filter, model_filter, qc_only, preferred_only],
@@ -92,7 +97,7 @@ def __(preds, search, dataset_filter, model_filter, qc_only, preferred_only):
 # ── Table ─────────────────────────────────────────────────────────────────────
 
 @app.cell
-def __(mo, df):
+def __(df):
     DISPLAY_COLS = [
         "run_id", "biosample_id", "biosample_description", "dataset",
         "model_name", "is_preferred", "qc_pass",
@@ -106,7 +111,7 @@ def __(mo, df):
 
 
 @app.cell
-def __(mo, table, df):
+def __(table, df):
     return (
         mo.vstack([
             mo.md(f"**{len(table.value)} selected** · {len(df)} predictions shown"),
@@ -136,7 +141,7 @@ def __(table, preds, runs):
 # ── Download ──────────────────────────────────────────────────────────────────
 
 @app.cell
-def __(mo, full_sel, sel_runs):
+def __(full_sel, sel_runs):
     if len(full_sel) > 0:
         download_ui = mo.hstack([
             mo.download(
@@ -158,12 +163,12 @@ def __(mo, full_sel, sel_runs):
 # ── IGV session ───────────────────────────────────────────────────────────────
 
 @app.cell
-def __(mo):
+def __():
     return mo.md("---\n## IGV session"),
 
 
 @app.cell
-def __(mo):
+def __():
     locus_input = mo.ui.text(value="chr10:79,017,034-79,273,289", label="Locus")
     include_crispr = mo.ui.checkbox(label="K562 CRISPR tracks")
     include_gwas = mo.ui.checkbox(label="UKBB GWAS track")
@@ -171,18 +176,18 @@ def __(mo):
 
 
 @app.cell
-def __(mo, locus_input, include_crispr, include_gwas):
+def __(locus_input, include_crispr, include_gwas):
     return (
         mo.hstack([locus_input, include_crispr, include_gwas], gap=2),
     )
 
 
 @app.cell
-def __(mo, full_sel, locus_input, include_crispr, include_gwas, json):
+def __(full_sel, locus_input, include_crispr, include_gwas, json):
     # Nature color palette — cycling per dataset
-    ATAC_COLORS      = ["#002359", "#00488d", "#5496ce", "#9bcae9", "#c5e5fb"]
-    MULTIOME_COLORS  = ["#430b4e", "#792374", "#a64791", "#d3a9ce", "#e9d3ea"]
-    SCATAC_COLORS    = ["#003648", "#006479", "#0096a0", "#96ced3", "#cae5ee"]
+    ATAC_COLORS     = ["#002359", "#00488d", "#5496ce", "#9bcae9", "#c5e5fb"]
+    MULTIOME_COLORS = ["#430b4e", "#792374", "#a64791", "#d3a9ce", "#e9d3ea"]
+    SCATAC_COLORS   = ["#003648", "#006479", "#0096a0", "#96ced3", "#cae5ee"]
 
     CRISPR_TRACKS = [
         {
