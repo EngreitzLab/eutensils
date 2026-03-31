@@ -19,7 +19,8 @@ def __():
     import pandas as pd
     import json
     from pathlib import Path
-    return pd, json, Path
+    import marimo as mo
+    return pd, json, Path, mo
 
 
 @app.cell
@@ -41,14 +42,14 @@ def __(pd, Path):
 
 
 @app.cell
-def __():
+def __(mo):
     return mo.md("# scE2G predictions registry"),
 
 
 # ── Filters ───────────────────────────────────────────────────────────────────
 
 @app.cell
-def __(preds):
+def __(mo, preds):
     search = mo.ui.text(placeholder="Search biosample, dataset...", label="Search")
     dataset_filter = mo.ui.multiselect(
         sorted(d for d in preds["dataset"].unique() if d), label="Dataset"
@@ -62,7 +63,7 @@ def __(preds):
 
 
 @app.cell
-def __(search, dataset_filter, model_filter, qc_only, preferred_only):
+def __(mo, search, dataset_filter, model_filter, qc_only, preferred_only):
     return (
         mo.hstack(
             [search, dataset_filter, model_filter, qc_only, preferred_only],
@@ -97,7 +98,7 @@ def __(preds, search, dataset_filter, model_filter, qc_only, preferred_only):
 # ── Table ─────────────────────────────────────────────────────────────────────
 
 @app.cell
-def __(df):
+def __(mo, df):
     DISPLAY_COLS = [
         "run_id", "biosample_id", "biosample_description", "dataset",
         "model_name", "is_preferred", "qc_pass",
@@ -111,7 +112,7 @@ def __(df):
 
 
 @app.cell
-def __(table, df):
+def __(mo, table, df):
     return (
         mo.vstack([
             mo.md(f"**{len(table.value)} selected** · {len(df)} predictions shown"),
@@ -141,7 +142,7 @@ def __(table, preds, runs):
 # ── Download ──────────────────────────────────────────────────────────────────
 
 @app.cell
-def __(full_sel, sel_runs):
+def __(mo, full_sel, sel_runs):
     if len(full_sel) > 0:
         download_ui = mo.hstack([
             mo.download(
@@ -163,12 +164,12 @@ def __(full_sel, sel_runs):
 # ── IGV session ───────────────────────────────────────────────────────────────
 
 @app.cell
-def __():
+def __(mo):
     return mo.md("---\n## IGV session"),
 
 
 @app.cell
-def __():
+def __(mo):
     locus_input = mo.ui.text(value="chr10:79,017,034-79,273,289", label="Locus")
     include_crispr = mo.ui.checkbox(label="K562 CRISPR tracks")
     include_gwas = mo.ui.checkbox(label="UKBB GWAS track")
@@ -176,14 +177,14 @@ def __():
 
 
 @app.cell
-def __(locus_input, include_crispr, include_gwas):
+def __(mo, locus_input, include_crispr, include_gwas):
     return (
         mo.hstack([locus_input, include_crispr, include_gwas], gap=2),
     )
 
 
 @app.cell
-def __(full_sel, locus_input, include_crispr, include_gwas, json):
+def __(mo, full_sel, locus_input, include_crispr, include_gwas, json):
     # Nature color palette — cycling per dataset
     ATAC_COLORS     = ["#002359", "#00488d", "#5496ce", "#9bcae9", "#c5e5fb"]
     MULTIOME_COLORS = ["#430b4e", "#792374", "#a64791", "#d3a9ce", "#e9d3ea"]
