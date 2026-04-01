@@ -218,17 +218,19 @@ def validate_oak_paths(preds_df, runs_df):
     pred_oak = ["oak_predictions_full", "oak_predictions_thresholded",
                 "rna_matrix_file", "atac_frag_file"]
     run_oak = ["results_dir", "cell_clusters_config"]
-    for _, row in preds_df.iterrows():
+    for idx, row in preds_df.iterrows():
         label = f"{row['biosample_id']} / {row['model_name']}"
         for col in pred_oak:
             val = str(row.get(col, "")).strip()
             if val and val != "nan" and not Path(val).exists():
                 issues.append(f"  [predictions | {col}] {val}  -- {label}")
-    for _, row in runs_df.iterrows():
+                preds_df.at[idx, col] = ""
+    for idx, row in runs_df.iterrows():
         for col in run_oak:
             val = str(row.get(col, "")).strip()
             if val and val != "nan" and not Path(val).exists():
                 issues.append(f"  [runs | {col}] {val}  -- run: {row['run_id']}")
+                runs_df.at[idx, col] = ""
     return issues
 
 
@@ -275,6 +277,8 @@ def resolve_run_info(run_id, runs_template_row, existing_runs):
     igv_dir_str = pick("igv_dir")
     if not igv_dir_str and config.get("IGV_dir") and scE2G_dir:
         igv_dir_str = str(resolve(config["IGV_dir"], scE2G_dir))
+    if not igv_dir_str or not Path(igv_dir_str).exists():
+        igv_dir_str = results_dir_str
     igv_dir = Path(igv_dir_str) if igv_dir_str else None
 
     # cell_clusters: existing > config (never manually provided in template)
@@ -380,7 +384,7 @@ def main():
                 missing.append(biosample_id)
                 continue
             print(f"  {biosample_id}: {', '.join(r['model_name'] for r in model_rows)}")
-                for mr in model_rows:
+            for mr in model_rows:
                 all_preds.append({
                     "run_id": run_id,
                     "biosample_id": biosample_id,
