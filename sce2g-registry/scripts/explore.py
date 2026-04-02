@@ -54,9 +54,9 @@ def __(mo, preds):
 
     # Map dataset_description → dataset id for filter labels
     dataset_map = {}
-    for _, row in preds[["dataset", "dataset_description"]].drop_duplicates().iterrows():
-        label = row["dataset_description"] or row["dataset"] or "(no dataset)"
-        dataset_map[label] = row["dataset"]
+    for _, _row in preds[["dataset", "dataset_description"]].drop_duplicates().iterrows():
+        _label = _row["dataset_description"] or _row["dataset"] or "(no dataset)"
+        dataset_map[_label] = _row["dataset"]
     dataset_options = sorted(dataset_map)
     dataset_filter = mo.ui.multiselect(dataset_options, value=dataset_options, label="Dataset")
 
