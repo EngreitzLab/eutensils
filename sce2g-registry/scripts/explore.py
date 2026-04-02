@@ -14,7 +14,7 @@ import marimo as mo
 app = mo.App(width="full")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __():
     import pandas as pd
     import json
@@ -23,7 +23,7 @@ def __():
     return pd, json, Path, mo
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __(pd, Path):
     GITHUB_RAW = "https://raw.githubusercontent.com/EngreitzLab/eutensils/main/sce2g-registry"
 
@@ -41,14 +41,14 @@ def __(pd, Path):
     return GITHUB_RAW, preds, runs
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo):
     mo.md("# scE2G predictions registry")
 
 
 # ── Filters ───────────────────────────────────────────────────────────────────
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo, preds):
     search = mo.ui.text(placeholder="Search biosample, dataset...", label="Search")
 
@@ -69,7 +69,7 @@ def __(mo, preds):
     return search, dataset_filter, dataset_map, model_filter, qc_only, preferred_only, show_all
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo, search, dataset_filter, model_filter, qc_only, preferred_only, show_all):
     mo.hstack(
         [search, dataset_filter, model_filter, qc_only, preferred_only, show_all],
@@ -78,7 +78,7 @@ def __(mo, search, dataset_filter, model_filter, qc_only, preferred_only, show_a
     )
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __(preds, search, dataset_filter, dataset_map, model_filter, qc_only, preferred_only, show_all):
     df = preds.copy()
     if not show_all.value:
@@ -105,7 +105,7 @@ def __(preds, search, dataset_filter, dataset_map, model_filter, qc_only, prefer
 
 # ── Table ─────────────────────────────────────────────────────────────────────
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo, df):
     DISPLAY_COLS = [
         "run_id", "biosample_id", "biosample_description", "dataset",
@@ -119,7 +119,7 @@ def __(mo, df):
     return (table,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo, table, df):
     mo.vstack([
         mo.md(f"**{len(table.value)} selected** · {len(df)} predictions shown"),
@@ -129,7 +129,7 @@ def __(mo, table, df):
 
 # ── Resolve full rows for selected entries ────────────────────────────────────
 
-@app.cell
+@app.cell(hide_code=True)
 def __(table, preds, runs):
     sel = table.value
     if len(sel) > 0:
@@ -147,7 +147,7 @@ def __(table, preds, runs):
 
 # ── Download ──────────────────────────────────────────────────────────────────
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo, full_sel, sel_runs):
     if len(full_sel) > 0:
         download_ui = mo.vstack([
@@ -172,12 +172,12 @@ def __(mo, full_sel, sel_runs):
 
 # ── IGV session ───────────────────────────────────────────────────────────────
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo):
     mo.md("---\n## IGV session")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo):
     locus_input = mo.ui.text(value="chr10:79,017,034-79,273,289", label="Locus")
     include_crispr = mo.ui.checkbox(label="K562 CRISPR tracks")
@@ -185,12 +185,12 @@ def __(mo):
     return locus_input, include_crispr, include_gwas
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo, locus_input, include_crispr, include_gwas):
     mo.hstack([locus_input, include_crispr, include_gwas], gap=2)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def __(mo, full_sel, locus_input, include_crispr, include_gwas, json):
     # Nature color palette — cycling per dataset
     ATAC_COLORS     = ["#002359", "#00488d", "#5496ce", "#9bcae9", "#c5e5fb"]
