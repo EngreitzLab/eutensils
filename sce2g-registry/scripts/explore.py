@@ -150,17 +150,20 @@ def __(table, preds, runs):
 @app.cell
 def __(mo, full_sel, sel_runs):
     if len(full_sel) > 0:
-        download_ui = mo.hstack([
-            mo.download(
-                full_sel.to_csv(sep="\t", index=False).encode(),
-                filename="selected_predictions.tsv",
-                label=f"Download predictions ({len(full_sel)} rows)",
-            ),
-            mo.download(
-                sel_runs.to_csv(sep="\t", index=False).encode(),
-                filename="selected_runs.tsv",
-                label=f"Download run metadata ({len(sel_runs)} rows)",
-            ),
+        download_ui = mo.vstack([
+            mo.md(f"Download both files to get full metadata for the {len(full_sel)} selected prediction(s):"),
+            mo.hstack([
+                mo.download(
+                    full_sel.to_csv(sep="\t", index=False).encode(),
+                    filename="selected_predictions.tsv",
+                    label=f"predictions.tsv ({len(full_sel)} rows)",
+                ),
+                mo.download(
+                    sel_runs.to_csv(sep="\t", index=False).encode(),
+                    filename="selected_runs.tsv",
+                    label=f"runs.tsv ({len(sel_runs)} run(s))",
+                ),
+            ]),
         ])
     else:
         download_ui = mo.md("*Select rows above to download or build an IGV session.*")
@@ -256,11 +259,12 @@ def __(mo, full_sel, locus_input, include_crispr, include_gwas, json):
         session = {"genome": "hg38", "locus": locus_input.value, "tracks": tracks}
         session_json = json.dumps(session, indent=2)
 
-        igv_html = f"""<div id="igv-div" style="padding-top:10px;"></div>
+        div_id = f"igv-div-{abs(hash(session_json)) % 10**8}"
+        igv_html = f"""<div id="{div_id}" style="padding-top:10px;"></div>
 <script>(function() {{
   var options = {session_json};
   function launch() {{
-    var el = document.getElementById('igv-div');
+    var el = document.getElementById('{div_id}');
     if (!el) return;
     el.innerHTML = '';
     if (typeof igv !== 'undefined') {{
