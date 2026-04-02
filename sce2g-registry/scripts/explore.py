@@ -43,7 +43,7 @@ def __(pd, Path):
 
 @app.cell
 def __(mo):
-    return mo.md("# scE2G predictions registry"),
+    mo.md("# scE2G predictions registry")
 
 
 # ── Filters ───────────────────────────────────────────────────────────────────
@@ -64,12 +64,10 @@ def __(mo, preds):
 
 @app.cell
 def __(mo, search, dataset_filter, model_filter, qc_only, preferred_only):
-    return (
-        mo.hstack(
-            [search, dataset_filter, model_filter, qc_only, preferred_only],
-            gap=2,
-            wrap=True,
-        ),
+    mo.hstack(
+        [search, dataset_filter, model_filter, qc_only, preferred_only],
+        gap=2,
+        wrap=True,
     )
 
 
@@ -113,12 +111,10 @@ def __(mo, df):
 
 @app.cell
 def __(mo, table, df):
-    return (
-        mo.vstack([
-            mo.md(f"**{len(table.value)} selected** · {len(df)} predictions shown"),
-            table,
-        ]),
-    )
+    mo.vstack([
+        mo.md(f"**{len(table.value)} selected** · {len(df)} predictions shown"),
+        table,
+    ])
 
 
 # ── Resolve full rows for selected entries ────────────────────────────────────
@@ -165,7 +161,7 @@ def __(mo, full_sel, sel_runs):
 
 @app.cell
 def __(mo):
-    return mo.md("---\n## IGV session"),
+    mo.md("---\n## IGV session")
 
 
 @app.cell
@@ -178,9 +174,7 @@ def __(mo):
 
 @app.cell
 def __(mo, locus_input, include_crispr, include_gwas):
-    return (
-        mo.hstack([locus_input, include_crispr, include_gwas], gap=2),
-    )
+    mo.hstack([locus_input, include_crispr, include_gwas], gap=2)
 
 
 @app.cell
