@@ -51,45 +51,55 @@ def __(mo):
 @app.cell
 def __(mo, preds):
     search = mo.ui.text(placeholder="Search biosample, dataset...", label="Search")
-    dataset_filter = mo.ui.multiselect(
-        sorted(d for d in preds["dataset"].unique() if d), label="Dataset"
-    )
-    model_filter = mo.ui.multiselect(
-        sorted(preds["model_name"].unique()), label="Model"
-    )
+
+    # Map dataset_description → dataset id for filter labels
+    dataset_map = {}
+    for _, row in preds[["dataset", "dataset_description"]].drop_duplicates().iterrows():
+        label = row["dataset_description"] or row["dataset"] or "(no dataset)"
+        dataset_map[label] = row["dataset"]
+    dataset_options = sorted(dataset_map)
+    dataset_filter = mo.ui.multiselect(dataset_options, value=dataset_options, label="Dataset")
+
+    model_options = sorted(preds["model_name"].unique())
+    model_filter = mo.ui.multiselect(model_options, value=model_options, label="Model")
+
     qc_only = mo.ui.checkbox(label="QC pass only")
     preferred_only = mo.ui.checkbox(label="Preferred only", value=True)
-    return search, dataset_filter, model_filter, qc_only, preferred_only
+    show_all = mo.ui.checkbox(label="Show all")
+    return search, dataset_filter, dataset_map, model_filter, qc_only, preferred_only, show_all
 
 
 @app.cell
-def __(mo, search, dataset_filter, model_filter, qc_only, preferred_only):
+def __(mo, search, dataset_filter, model_filter, qc_only, preferred_only, show_all):
     mo.hstack(
-        [search, dataset_filter, model_filter, qc_only, preferred_only],
+        [search, dataset_filter, model_filter, qc_only, preferred_only, show_all],
         gap=2,
         wrap=True,
     )
 
 
 @app.cell
-def __(preds, search, dataset_filter, model_filter, qc_only, preferred_only):
+def __(preds, search, dataset_filter, dataset_map, model_filter, qc_only, preferred_only, show_all):
     df = preds.copy()
-    if search.value.strip():
-        q = search.value.strip().lower()
-        mask = (
-            df["biosample_id"].str.lower().str.contains(q, na=False)
-            | df["biosample_description"].str.lower().str.contains(q, na=False)
-            | df["dataset"].str.lower().str.contains(q, na=False)
-        )
-        df = df[mask]
-    if dataset_filter.value:
-        df = df[df["dataset"].isin(dataset_filter.value)]
-    if model_filter.value:
-        df = df[df["model_name"].isin(model_filter.value)]
-    if qc_only.value:
-        df = df[df["qc_pass"] == "True"]
-    if preferred_only.value:
-        df = df[df["is_preferred"] == "True"]
+    if not show_all.value:
+        if search.value.strip():
+            q = search.value.strip().lower()
+            mask = (
+                df["biosample_id"].str.lower().str.contains(q, na=False)
+                | df["biosample_description"].str.lower().str.contains(q, na=False)
+                | df["dataset"].str.lower().str.contains(q, na=False)
+                | df["dataset_description"].str.lower().str.contains(q, na=False)
+            )
+            df = df[mask]
+        if dataset_filter.value:
+            selected_datasets = {dataset_map[v] for v in dataset_filter.value}
+            df = df[df["dataset"].isin(selected_datasets)]
+        if model_filter.value:
+            df = df[df["model_name"].isin(model_filter.value)]
+        if qc_only.value:
+            df = df[df["qc_pass"] == "True"]
+        if preferred_only.value:
+            df = df[df["is_preferred"] == "True"]
     return (df,)
 
 
@@ -154,7 +164,7 @@ def __(mo, full_sel, sel_runs):
         ])
     else:
         download_ui = mo.md("*Select rows above to download or build an IGV session.*")
-    return (download_ui,)
+    download_ui
 
 
 # ── IGV session ───────────────────────────────────────────────────────────────
@@ -276,7 +286,7 @@ def __(mo, full_sel, locus_input, include_crispr, include_gwas, json):
             mo.Html(igv_html),
         ])
 
-    return (igv_ui,)
+    igv_ui
 
 
 if __name__ == "__main__":

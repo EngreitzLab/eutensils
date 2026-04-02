@@ -13,6 +13,7 @@ sce2g-registry/
     merge.py            Merges reviewed output into the registry
     validate.py         Validates OAK paths and stream URLs
     explore.py          Marimo web app for browsing predictions
+    remove.py           Removes a run_id from the registry
   templates/
     template_partial_runs.tsv         Fill in to describe a new run
     template_partial_predictions.tsv  Fill in to describe new biosamples
@@ -102,6 +103,16 @@ python scripts/merge.py temp/{run_id}_predictions.tsv
 # Overwrite existing entries for this run_id:
 python scripts/merge.py temp/{run_id}_predictions.tsv temp/{run_id}_runs.tsv --force
 ```
+
+---
+
+## Removing a run
+
+```bash
+python scripts/remove.py <run_id> [<run_id> ...]
+```
+
+Removes all matching rows from both `predictions.tsv` and `runs.tsv`.
 
 ---
 
